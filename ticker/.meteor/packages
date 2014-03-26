@@ -5,5 +5,8 @@
 
 standard-app-packages
 autopublish
-insecure
 preserve-inputs
+accounts-ui
+bootstrap
+accounts-base
+accounts-twitter
