@@ -3,7 +3,7 @@
 </head>
 
 <body>
- <div class="navbar navbar-static-top">
+ <div class="navbar navbar-static-top navbar-inverse">
  
       <div class="navbar-inner">
         <div class="container">
@@ -19,5 +19,25 @@
 </div>
 
 
+<div class="well">
+   {{> vital_info}}
+</div>
+
 
 </body>
+
+
+
+
+
+<template name="vital_info">
+
+  <div class = "row">
+    <div class="span12">
+      <div class="dashboard_heading">
+        <h3> <i class="fa fa-tachometer"></i> Control Panel </h3>
+      </div>
+    </div>
+  </div>
+
+</template>

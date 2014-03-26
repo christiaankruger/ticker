@@ -1,1 +1,10 @@
 /* CSS declarations go here */
+.login-display-name {
+	color: #FFFFFF;
+	padding-top: 10px;
+}
+
+.dashboard_heading {
+	padding-left: 50%;
+}
+
