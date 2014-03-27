@@ -18,19 +18,35 @@
  
 </div>
 
-
-<div class="well">
-   {{> vital_info}}
+<div>
+	{{> check_active}}
 </div>
+
 
 
 </body>
 
+<template name="check_active">
+	<div class="well">
+	   {{#if isActive}}
+	   {{> game_screen}}
+	   {{else}}
+	   {{> not_active}}
+	   {{/if}}
+	</div>
+</template>
+
+<template name = "not_active">
+	<div class="row">
+		<div class="center_text">
+		<h4> The next game will probably start soon. Would you like to join us? </h4>
+		<input type="button" class="btn-success" id="join" value="Yes, please."/>
+		</div>
+	</div>
+</template>
 
 
-
-
-<template name="vital_info">
+<template name="game_screen">
 
   <div class = "row">
     <div class="span12">
@@ -38,6 +54,15 @@
         <h3> <i class="fa fa-tachometer"></i> Control Panel </h3>
       </div>
     </div>
+  </div>
+
+  <div class="row">
+  	<div class="span6">
+
+  	</div>
+  	<div class="span6">
+
+  	</div>
   </div>
 
 </template>
