@@ -2,7 +2,7 @@ Players = new Meteor.Collection("players");
 systemStream = new Meteor.Stream('system');
 System = new Meteor.Collection("system");
 
-Template.check_active.isActive = function ()
+Template.main.isActive = function ()
 {
 	if (!System.findOne()) return false;
 	var active = System.findOne().active;
@@ -10,6 +10,19 @@ Template.check_active.isActive = function ()
 		alert("A game is running, but log in to join.");
 	}
 	return active && Meteor.userId();
+}
+
+Template.main.user_name = function()
+{
+	if (!Meteor.user()) return;
+	return Meteor.user().profile.name;
+}
+
+Template.main.status = function()
+{
+	if (!System.findOne()) return "Server offline.";
+	if (System.findOne().active) return "Server online.";
+	return "Server offline.";
 }
 
 Template.game_screen.cash = function()
@@ -26,6 +39,10 @@ Template.game_screen.players = function()
 {
 	return Players.find({}, {sort:{"cash": -1}});
 }
+
+Meteor.startup(function () {
+    $('body').attr('skin-black');
+  });
 
 Template.not_active.events({
 

@@ -1,42 +1,4 @@
-/* CSS declarations go here */
-.login-display-name {
-	color: #000000;
-	padding-top: 10px;
-}
-
-.dashboard_heading {
-	padding-left: 50%;
-}
-
-.center_text {
-	width: 50%;
-	margin: auto;
-}
-
-.cash h4 {
-	text-align: center;
-}
-
-.cash {
-	padding-top: 10px;
-}
-
-.rankings h4 {
-	text-align: center;
-}
-
-.rankings p {
-	text-align: center;
-}
-
-
-.blue {
-   	background-color: #7878e2;
- }
-
- .fa-fw {width: 2em;}
- 
- @import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,300italic,400italic,600italic);
+@import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,300italic,400italic,600italic);
 
 @import url(http://fonts.googleapis.com/css?family=Kaushan+Script);
 /*! 

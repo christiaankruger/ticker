@@ -1,79 +1,206 @@
-<head>
-  <title>Home | Ticker</title>
-</head>
+    <head>
+        <meta charset="UTF-8">
+        <title>Ticker | Dashboard</title>
+        
 
-<body>
- <div class="navbar navbar-static-top navbar-inverse">
- 
-      <div class="navbar-inner">
-        <div class="container">
-          <a class="brand" href="/">Ticker</a>
-          <ul class="nav pull-right">
-            <li>
-              {{> loginButtons}}
-            </li>
-          </ul>
-        </div>
-      </div>
- 
-</div>
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+          <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <body>
 
-<div>
-	{{> check_active}}
-</div>
+     {{> main}}
+
+   </body>
+      
+       <template name = "main">
+       <!-- header logo: style can be found in header.less -->
+        <header class="header">
+            <a href="index.html" class="logo">
+                <!-- Add the class icon to your logo image or logo icon to add the margining -->
+                Ticker
+            </a>
+            <!-- Header Navbar: style can be found in header.less -->
+            <nav class="navbar navbar-static-top" role="navigation">
+                <!-- Sidebar toggle button-->
+                <a href="#" class="navbar-btn sidebar-toggle" role="button">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </a>
+                <div class="navbar-right">
+                    <ul class="nav navbar-nav">
+                        <!-- Messages: style can be found in dropdown.less-->
+                        
+                        <!-- User Account: style can be found in dropdown.less -->
+                        <li class="user user-menu">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <span> {{> loginButtons}}</span>
+                            </a>
+                            
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+        <div class="wrapper row-offcanvas row-offcanvas-left">
+            <!-- Left side column. contains the logo and sidebar -->
+            <aside class="left-side sidebar-offcanvas">
+                <!-- sidebar: style can be found in sidebar.less -->
+                <section class="sidebar">
+                    <!-- Sidebar user panel -->
+                    <div class="user-panel">
+                        <div class="pull-left image">
+                            <img src="img/avatar3.png" class="img-circle" alt="User Image" />
+                        </div>
+                        <div class="pull-left info">
+                            <p>{{user_name}}</p>
+
+                            <a href="#"><i class="fa fa-circle text-success"></i> {{status}}</a>
+                        </div>
+                    </div>
+
+                    <!-- sidebar menu: : style can be found in sidebar.less -->
+                    <ul class="sidebar-menu">
+                        <li class="active">
+                            <a href="index.html">
+                                <i class="fa fa-dashboard"></i> <span>Dashboard</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="pages/widgets.html">
+                                <i class="fa fa-th"></i> <span>Factories</span> <small class="badge pull-right bg-green">new</small>
+                            </a>
+                        </li>
+                        
+                    </ul>
+                </section>
+                <!-- /.sidebar -->
+            </aside>
+
+             {{#if isActive}}
+                {{> game_screen}}
+            {{/if}}
+
+            
+        </div><!-- ./wrapper -->  
+        </template>      
+    
 
 
+    <template name="game_screen">
 
-</body>
+            <!-- Right side column. Contains the navbar and content of the page -->
+            <aside class="right-side">
+                <!-- Content Header (Page header) -->
+                <section class="content-header">
+                    <h1>
+                        Dashboard
+                        <small>Control panel</small>
+                    </h1>
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li class="active">Dashboard</li>
+                    </ol>
+                </section>
 
-<template name="check_active">
-	<div>
-	   {{#if isActive}}
-	   {{> game_screen}}
-	   {{else}}
-	   {{> not_active}}
-	   {{/if}}
-	</div>
-</template>
+                <!-- Main content -->
+                <section class="content">
 
-<template name = "not_active">
-	<div class="row well">
-		<div class="center_text" id="notice">
-		<h4> The next game will probably start soon. Would you like to join us? </h4>
-		<input type="button" class="btn btn-default btn-wide" id="join" value="Yes, please."/>
-		</div>
-	</div>
-</template>
+                    <!-- Small boxes (Stat box) -->
+                    <div class="row">
+                        <div class="col-lg-3 col-xs-6">
+                            <!-- small box -->
+                            <div class="small-box bg-aqua">
+                                <div class="inner">
+                                    <h3>
+                                        $15,000
+                                    </h3>
+                                    <p>
+                                        Cash
+                                    </p>
+                                </div>
+                                <div class="icon">
+                                    <i class="fa fa-usd"></i>
+                                </div>
+                                <a href="#" class="small-box-footer">
+                                    More info <i class="fa fa-arrow-circle-right"></i>
+                                </a>
+                            </div>
+                        </div><!-- ./col -->
+                        <div class="col-lg-3 col-xs-6">
+                            <!-- small box -->
+                            <div class="small-box bg-green">
+                                <div class="inner">
+                                    <h3>
+                                        $200,000
+                                    </h3>
+                                    <p>
+                                        Nett Worth
+                                    </p>
+                                </div>
+                                <div class="icon">
+                                    <i class="fa fa-money"></i>
+                                </div>
+                                <a href="#" class="small-box-footer">
+                                    More info <i class="fa fa-arrow-circle-right"></i>
+                                </a>
+                            </div>
+                        </div><!-- ./col -->
+                        <div class="col-lg-3 col-xs-6">
+                            <!-- small box -->
+                            <div class="small-box bg-yellow">
+                                <div class="inner">
+                                    <h3>
+                                        $250.00
+                                    </h3>
+                                    <p>
+                                        Sales per second
+                                    </p>
+                                </div>
+                                <div class="icon">
+                                    <i class="fa fa-plus"></i>
+                                </div>
+                                <a href="#" class="small-box-footer">
+                                    More info <i class="fa fa-arrow-circle-right"></i>
+                                </a>
+                            </div>
+                        </div><!-- ./col -->
+                        <div class="col-lg-3 col-xs-6">
+                            <!-- small box -->
+                            <div class="small-box bg-red">
+                                <div class="inner">
+                                    <h3>
+                                        $128.00
+                                    </h3>
+                                    <p>
+                                        Expenses per second
+                                    </p>
+                                </div>
+                                <div class="icon">
+                                    <i class="fa fa-caret-down"></i>
+                                </div>
+                                <a href="#" class="small-box-footer">
+                                    More info <i class="fa fa-arrow-circle-right"></i>
+                                </a>
+                            </div>
+                        </div><!-- ./col -->
+                    </div><!-- /.row -->
 
+                    <!-- top row -->
+                    <div class="row">
+                        <div class="col-xs-12 connectedSortable">
+                            
+                        </div><!-- /.col -->
+                    </div>
+                    <!-- /.row -->
 
-<template name="game_screen">
+                    <!--  -->
 
-  <div class = "row well">
-    <div class="span12">
-      <div class="dashboard_heading">
-        <h3> <i class="fa fa-tachometer"></i> Control Panel </h3>
-      </div>
-    </div>
-  </div>
-
-  <div class="container">
-  <div class="row-fluid well blue">
-  	<div class="span6">
-  		
-  		<div class="cash">
-  			<h4> Cash: $ {{cash}} </h4>
-  			<h4> Nett worth: ${{nett}} </h4>
-  		</div>
-  	</div>
-  	<div class="span6">
-  		<div class="rankings">
-  			<h4> Leaderboard </h4>
-			{{#each players}}
-			<p> {{name}}: {{cash}} </p>
-			{{/each}}
-  		</div>
-  	</div>
-  </div>
-</div>
-
-</template>
+                </section><!-- /.content -->
+            </aside><!-- /.right-side -->
+          </template>

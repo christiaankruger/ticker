@@ -13,7 +13,9 @@
 var starting_cash = 100.00;
 
  Meteor.startup(function () {
-    
+    if (!System.findOne()) {
+      System.insert({"active": false});
+    }
   });
 
  Router.map(function () {
@@ -36,7 +38,9 @@ this.route('start-server', {
     path: '/server/start',
 
     action: function () {
-      System.update({"active" : false}, {"active": true});
+
+      System._dropCollection();
+      System.insert({"active": true});
       this.response.writeHead(200, {'Content-Type': 'text/html'});
       this.response.end("success");
     }
@@ -47,6 +51,7 @@ this.route('start-server', {
  Meteor.methods({
 
  	add_player: function(userId, name) {
+    if (Players.find({"id": userId}).count() != 0) return true;
  		Players.insert({"id": userId, "name": name, "cash": starting_cash});
  		console.log("Added " + name + " to the game.");
  		return true;

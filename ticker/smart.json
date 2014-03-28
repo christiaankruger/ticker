@@ -1,6 +1,7 @@
 {
   "packages": {
     "iron-router": {},
-    "streams": {}
+    "streams": {},
+    "bootstrap-wysihtml5": {}
   }
 }
