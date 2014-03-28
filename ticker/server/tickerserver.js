@@ -2,6 +2,15 @@
  System = new Meteor.Collection("system");
  systemStream = new Meteor.Stream('system');
 
+ var goods = [
+	{"name" : "Toys", "price" : "5.00"},
+	{"name" : "Paper", "price" : "5.00"},
+	{"name" : "Kryptonite", "price" : "5.00"},
+	{"name" : "Gold", "price" : "5.00"},
+	{"name" : "Silver", "price" : "5.00"}
+];
+
+var starting_cash = 100.00;
 
  Meteor.startup(function () {
     
@@ -34,6 +43,16 @@ this.route('start-server', {
   });
 
 });
+
+ Meteor.methods({
+
+ 	add_player: function(userId, name) {
+ 		Players.insert({"id": userId, "name": name, "cash": starting_cash});
+ 		console.log("Added " + name + " to the game.");
+ 		return true;
+ 	}
+
+ });
 
 
 function reset_server()

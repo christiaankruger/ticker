@@ -7,8 +7,9 @@ standard-app-packages
 autopublish
 preserve-inputs
 accounts-ui
-bootstrap
 accounts-base
 accounts-twitter
 iron-router
 streams
+jquery
+bootstrap
