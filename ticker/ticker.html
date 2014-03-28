@@ -118,7 +118,7 @@
                             <div class="small-box bg-aqua">
                                 <div class="inner">
                                     <h3>
-                                        $15,000
+                                        ${{cash}}
                                     </h3>
                                     <p>
                                         Cash
@@ -132,6 +132,7 @@
                                 </a>
                             </div>
                         </div><!-- ./col -->
+
                         <div class="col-lg-3 col-xs-6">
                             <!-- small box -->
                             <div class="small-box bg-green">
@@ -151,6 +152,7 @@
                                 </a>
                             </div>
                         </div><!-- ./col -->
+
                         <div class="col-lg-3 col-xs-6">
                             <!-- small box -->
                             <div class="small-box bg-yellow">
@@ -189,6 +191,12 @@
                                 </a>
                             </div>
                         </div><!-- ./col -->
+
+                        {{#each goods}}
+                        {{> good}}
+                        {{/each}}
+                       
+
                     </div><!-- /.row -->
 
                     <!-- top row -->
@@ -204,3 +212,25 @@
                 </section><!-- /.content -->
             </aside><!-- /.right-side -->
           </template>
+
+<template name="good">
+                        <div class="col-lg-3 col-xs-6">
+                            <!-- small box -->
+                            <div class="small-box bg-black">
+                                <div class="inner">
+                                    <h3 style="text-align:center;">
+                                        ${{price}}
+                                    </h3>
+                                    <p>
+                                        
+                                    </p>
+                                </div>
+                                <div class="icon">
+                                    <i class="fa fa-circle"></i>
+                                </div>
+                                <a href="#" class="small-box-footer">
+                                    {{name}} 
+                                </a>
+                            </div>
+                        </div><!-- ./col -->
+</template>

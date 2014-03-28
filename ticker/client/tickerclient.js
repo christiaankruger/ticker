@@ -1,6 +1,7 @@
 Players = new Meteor.Collection("players");
 systemStream = new Meteor.Stream('system');
 System = new Meteor.Collection("system");
+Goods = new Meteor.Collection("goods");
 
 Template.main.isActive = function ()
 {
@@ -39,6 +40,12 @@ Template.game_screen.players = function()
 {
 	return Players.find({}, {sort:{"cash": -1}});
 }
+
+Template.game_screen.goods = function()
+{
+	return Goods.find();
+}
+
 
 Meteor.startup(function () {
     $('body').attr('skin-black');
