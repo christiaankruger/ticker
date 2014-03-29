@@ -155,6 +155,7 @@ function reset_server()
 
  function sales_tick()
  {
+ 		var sales_per_second = 0.0;
  		var players_cursor = Players.find();
  		var players = players_cursor.fetch();
  		for (var i = 0; i < players.length; i++) {
@@ -167,10 +168,11 @@ function reset_server()
  				var factory = factories[j];
  				var good = Goods.findOne({"custom_id": factory.goods_id});
  				cash += factory.units * good.price;
+ 				sales_per_second += factory.units * good.price;
 
  			}
  			pretty_number(cash);
- 			Players.update({"id": id}, {$set: {"cash": cash}});
+ 			Players.update({"id": id}, {$set: {"cash": cash, "sales_per_second" : sales_per_second}});
  		}
  }
 

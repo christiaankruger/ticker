@@ -39,9 +39,16 @@ Template.main.status = function()
 	return "Server offline.";
 }
 
+Template.dashboard.s_p_s = function()
+{
+	var sps = Players.findOne({"id": Meteor.userId()}).sales_per_second;
+	return format_number(sps, 2);
+}
+
 Template.dashboard.cash = function()
 {
-	return Players.findOne({"id": Meteor.userId()}).cash;
+	var cash = Players.findOne({"id": Meteor.userId()}).cash;
+	return format_number(cash, 2);
 }
 
 Template.dashboard.nett = function()
@@ -111,8 +118,37 @@ Template.factory.events({
 		event.preventDefault();
 		var good = event.currentTarget.id;
 		Meteor.call("buy_factory", Meteor.userId(), good, function (err, success) {
-			
+
 		});
 		
 	}
 });
+
+function format_number(pnumber,decimals){
+    if (isNaN(pnumber)) { return 0};
+    if (pnumber=='') { return 0};
+    var snum = new String(pnumber);
+    var sec = snum.split('.');
+    var whole = parseFloat(sec[0]);
+    var result = '';
+    if(sec.length > 1){
+        var dec = new String(sec[1]);
+        dec = String(parseFloat(sec[1])/Math.pow(10,(dec.length - decimals)));
+        dec = String(whole + Math.round(parseFloat(dec))/Math.pow(10,decimals));
+        var dot = dec.indexOf('.');
+        if(dot == -1){
+            dec += '.';
+            dot = dec.indexOf('.');
+        }
+        while(dec.length <= dot + decimals) { dec += '0'; }
+        result = dec;
+    } else{
+        var dot;
+        var dec = new String(whole);
+        dec += '.';
+        dot = dec.indexOf('.');
+        while(dec.length <= dot + decimals) { dec += '0'; }
+        result = dec;
+    }
+    return result;
+}
