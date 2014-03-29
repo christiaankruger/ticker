@@ -4,17 +4,7 @@ System = new Meteor.Collection("system");
 Goods = new Meteor.Collection("goods");
 Factories = new Meteor.Collection("factories");
 
-function buy (goods_id)
-{
-	console.log("Going to buy a factory");
-
-	Meteor.call("buy_factory", Meteor.userId(), goods_id, function (err, success) {
-		if (success) {
-			alert("Success");
-		}	
-	});
-
-}
+var colors = ["blue", "black", "orange", "red", "green"];
 
 Template.main.isActive = function ()
 {
@@ -73,6 +63,7 @@ Template.facts.factories = function()
 	var facts = fact_cursor.fetch();
 	for (var i = 0; i < facts.length; i++) {
 		var goods_id = facts[i].goods_id;
+		var color = colors[parseInt(goods_id) % colors.length];
 		var good_name = Goods.findOne({"custom_id" : goods_id}).name;
 
 		var new_cost = Goods.findOne({"custom_id" : goods_id}).new_cost;
@@ -80,7 +71,7 @@ Template.facts.factories = function()
 		var units = facts[i].units;
 		var value = facts[i].value.toFixed(2);
 		var has_one = units != 0;
-		to_return.push({"goods_id": goods_id, "goods": good_name, "units": units, "value": value, "has_one": has_one, "new_cost" : new_cost});
+		to_return.push({"color": color, "goods_id": goods_id, "goods": good_name, "units": units, "value": value, "has_one": has_one, "new_cost" : new_cost});
 	}
 	return to_return;
 }	

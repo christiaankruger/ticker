@@ -14,7 +14,7 @@
 
 var MAX_RANGE = 0.5;
 
-var starting_cash = 1000.00;
+var starting_cash = 10000.00;
 var start_units = 5;
 
  Meteor.startup(function () {
@@ -185,7 +185,7 @@ function reset_server()
  	curr_price = pretty_number(curr_price);
  	if (curr_price <= 0) curr_price = 0.01;
  	Goods.update({"custom_id": id}, {$set: {"price": curr_price}});
- 	Goods.update({"custom_id": id}, {$set: {"new_cost": curr_price * 150}});
+ 	Goods.update({"custom_id": id}, {$set: {"new_cost": curr_price * 2000}});
  }
 
  function pretty_number (value)
