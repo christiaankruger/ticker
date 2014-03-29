@@ -22,12 +22,8 @@ var start_units = 5;
       System.insert({"active": false});
     }
     if (System.findOne().active) {
-    	Meteor.setInterval(function()
-      {
-      	 price_tick();
-      	 sales_tick();
-      }, 1000);
-    }
+    	set_ticks();
+  	}
   });
 
  Router.map(function () {
@@ -70,12 +66,21 @@ function start_server() {
       	var g = goods[i];
       	Goods.insert({"name": g.name, "price": g.price, "custom_id": i});
       }
-      Meteor.setInterval(function()
+      set_ticks();
+      
+}
+
+function set_ticks()
+{
+	Meteor.setInterval(function()
       {
       	 console.log("Tick");
-      	 price_tick();
       	 sales_tick();
       }, 1000);
+	Meteor.setInterval(function()
+	{
+		price_tick();
+	}, 3000);
 }
 
 function reset_server()
@@ -193,6 +198,3 @@ function reset_server()
  	value = value.toFixed(2);
  	return parseFloat(value);
  }
-
-
-

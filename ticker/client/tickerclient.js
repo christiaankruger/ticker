@@ -32,18 +32,26 @@ Template.main.status = function()
 Template.dashboard.s_p_s = function()
 {
 	var sps = Players.findOne({"id": Meteor.userId()}).sales_per_second;
-	return format_number(sps, 2);
+	return numeral(sps).format('0,0.00');
 }
 
 Template.dashboard.cash = function()
 {
 	var cash = Players.findOne({"id": Meteor.userId()}).cash;
-	return format_number(cash, 2);
+	return numeral(cash).format('0,0.00');
 }
 
 Template.dashboard.nett = function()
 {
-	return Players.findOne({"id": Meteor.userId()}).cash;
+	var cash = Players.findOne({"id": Meteor.userId()}).cash;
+	var fact_value = 0;
+	var fact_cursor = Factories.find({"owner": Meteor.userId()});
+	var facts = fact_cursor.fetch();
+	for (var i = 0; i < facts.length; i++) {
+		fact_value += facts[i].value;
+	}	
+	var total = cash + fact_value;
+	return numeral(total).format('0,0.00');
 }
 
 Template.game_screen.players = function()
@@ -53,7 +61,18 @@ Template.game_screen.players = function()
 
 Template.dashboard.goods = function()
 {
-	return Goods.find();
+	var to_return = [];
+
+	var goods_cursor = Goods.find();
+	var goods = goods_cursor.fetch();
+	for (var i = 0; i < goods.length; i++)
+	{
+		var good = goods[i];
+		var name = good.name;
+		var price = numeral(good.price).format('0,0.00');
+		to_return.push({"name": name, "price": price});
+	}
+	return to_return;
 }
 
 Template.facts.factories = function()
@@ -69,7 +88,7 @@ Template.facts.factories = function()
 		var new_cost = Goods.findOne({"custom_id" : goods_id}).new_cost;
 
 		var units = facts[i].units;
-		var value = facts[i].value.toFixed(2);
+		var value = numeral(facts[i].value).format('0,0.00');
 		var has_one = units != 0;
 		to_return.push({"color": color, "goods_id": goods_id, "goods": good_name, "units": units, "value": value, "has_one": has_one, "new_cost" : new_cost});
 	}
@@ -114,32 +133,3 @@ Template.factory.events({
 		
 	}
 });
-
-function format_number(pnumber,decimals){
-    if (isNaN(pnumber)) { return 0};
-    if (pnumber=='') { return 0};
-    var snum = new String(pnumber);
-    var sec = snum.split('.');
-    var whole = parseFloat(sec[0]);
-    var result = '';
-    if(sec.length > 1){
-        var dec = new String(sec[1]);
-        dec = String(parseFloat(sec[1])/Math.pow(10,(dec.length - decimals)));
-        dec = String(whole + Math.round(parseFloat(dec))/Math.pow(10,decimals));
-        var dot = dec.indexOf('.');
-        if(dot == -1){
-            dec += '.';
-            dot = dec.indexOf('.');
-        }
-        while(dec.length <= dot + decimals) { dec += '0'; }
-        result = dec;
-    } else{
-        var dot;
-        var dec = new String(whole);
-        dec += '.';
-        dot = dec.indexOf('.');
-        while(dec.length <= dot + decimals) { dec += '0'; }
-        result = dec;
-    }
-    return result;
-}
