@@ -86,6 +86,7 @@
                 {{> game_screen}}
             {{/if}}
 
+
             
         </div><!-- ./wrapper -->  
         </template>      
@@ -98,9 +99,9 @@
             <aside class="right-side">
                 <!-- Content Header (Page header) -->
                 <section class="content-header">
-                    <h1>
+                    <h1 id="main">
                         Dashboard
-                        <small>Control panel</small>
+                        <small id="small">Control panel</small>
                     </h1>
                     <ol class="breadcrumb">
                         <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
@@ -109,9 +110,39 @@
                 </section>
 
                 <!-- Main content -->
-                <section class="content">
+                <section class="content" id="main_content">
 
-                    <!-- Small boxes (Stat box) -->
+                    {{> dashboard}}
+
+                </section><!-- /.content -->
+            </aside><!-- /.right-side -->
+          </template>
+
+<template name="good">
+                        <div class="col-lg-3 col-xs-6">
+                            <!-- small box -->
+                            <div class="small-box bg-black">
+                                <div class="inner">
+                                    <h3 style="text-align:center;">
+                                        ${{price}}
+                                    </h3>
+                                    <p style="text-align:center;">
+                                        per unit
+                                    </p>
+                                </div>
+                                <div class="icon">
+                                    <i class="fa fa-circle"></i>
+                                </div>
+                                <a href="#" class="small-box-footer">
+                                    {{name}} 
+                                </a>
+                            </div>
+                        </div><!-- ./col -->
+</template>
+
+<template name="dashboard">
+
+  <!-- Small boxes (Stat box) -->
                     <div class="row">
                         <div class="col-lg-3 col-xs-6">
                             <!-- small box -->
@@ -199,6 +230,11 @@
 
                     </div><!-- /.row -->
 
+                    <div class="row">
+                        <h2 style="text-align:center;"> Factories </h2>
+                        {{> facts}}
+                    </div>
+
                     <!-- top row -->
                     <div class="row">
                         <div class="col-xs-12 connectedSortable">
@@ -208,29 +244,54 @@
                     <!-- /.row -->
 
                     <!--  -->
+</template>
 
-                </section><!-- /.content -->
-            </aside><!-- /.right-side -->
-          </template>
 
-<template name="good">
-                        <div class="col-lg-3 col-xs-6">
-                            <!-- small box -->
-                            <div class="small-box bg-black">
+<template name="facts">
+      
+          {{#each factories}}
+          <div class="col-lg-3 col-xs-6">
+          {{> factory}}
+          </div>
+          {{/each}}                      
+</template>
+
+<template name="factory">
+  <div class="small-box bg-yellow">
                                 <div class="inner">
-                                    <h3 style="text-align:center;">
-                                        ${{price}}
+                                    <h3>
+                                        {{goods}}
                                     </h3>
                                     <p>
-                                        
+                                        Good type
                                     </p>
+                                
+                                  <h3>
+                                    {{units}}
+                                  </h3>
+                                  <p>
+                                    Units per second
+                                  </p>
+                                  <h3>
+                                    ${{value}}
+                                  </h3>
+                                  <p>
+                                    Value
+                                  </p>
                                 </div>
                                 <div class="icon">
-                                    <i class="fa fa-circle"></i>
+                                    <i class="fa fa-plus"></i>
                                 </div>
-                                <a href="#" class="small-box-footer">
-                                    {{name}} 
+                                
+                                    {{#if has_one}}
+                                    <a href="#" id="{{goods_id}}" class="small-box-footer"> Upgrade
+                                      <i class="upgrade fa fa-arrow-circle-right"></i>
                                 </a>
+                                    {{else}}
+                                    <a href="#" id="{{goods_id}}" class="small-box-footer buy"> Buy for ${{new_cost}}
+                                      <i class="fa fa-arrow-circle-right"></i> </a>
+                                    {{/if}}
+
+                                    
                             </div>
-                        </div><!-- ./col -->
 </template>

@@ -2,6 +2,7 @@
  System = new Meteor.Collection("system");
  systemStream = new Meteor.Stream('system');
  Goods = new Meteor.Collection("goods");
+ Factories = new Meteor.Collection("factories");
 
  var goods = [
 	{"name" : "Toys", "price" : 5.00},
@@ -13,7 +14,8 @@
 
 var MAX_RANGE = 0.5;
 
-var starting_cash = 100.00;
+var starting_cash = 1000.00;
+var start_units = 5;
 
  Meteor.startup(function () {
     if (!System.findOne()) {
@@ -22,8 +24,8 @@ var starting_cash = 100.00;
     if (System.findOne().active) {
     	Meteor.setInterval(function()
       {
-      	 console.log("Tick");
-      	 tick();
+      	 price_tick();
+      	 sales_tick();
       }, 1000);
     }
   });
@@ -71,13 +73,16 @@ function start_server() {
       Meteor.setInterval(function()
       {
       	 console.log("Tick");
-      	 tick();
+      	 price_tick();
+      	 sales_tick();
       }, 1000);
 }
 
 function reset_server()
 {
 	System.update({"active" : true}, {"active": false});
+	Players._dropCollection();
+	Factories._dropCollection();
 }
 
  Meteor.methods({
@@ -85,13 +90,43 @@ function reset_server()
  	add_player: function(userId, name) {
     if (Players.find({"id": userId}).count() != 0) return true;
  		Players.insert({"id": userId, "name": name, "cash": starting_cash});
+
+ 		var goods_cursor = Goods.find();
+ 		var goods = goods_cursor.fetch();
+ 		for (var i = 0; i < goods.length; i++) {
+ 			var good = goods[i];
+ 			Factories.insert({"goods_id": good.custom_id, "owner": userId, "units": 0, "value": 0.00});
+ 		}
+
  		console.log("Added " + name + " to the game.");
  		return true;
+ 	},
+
+ 	buy_factory: function (userId, good)
+ 	{
+ 		good = parseInt(good);
+ 		console.log("good = " + good);
+ 		var cost = Goods.findOne({"custom_id": good}).new_cost;
+ 		var money = Players.findOne({"id": userId}).cash;
+
+ 		if (money < cost) return false;
+
+ 		console.log("cost = " + cost);
+ 		console.log("money = " + money);
+
+ 		Factories.update({"owner": userId, "goods_id": good}, {$set: {"units": start_units, "value" : cost}});
+
+ 		money -= cost;
+
+ 		Players.update({"id": userId}, {$set: {"cash": money}});
+
+ 		return true;
+
  	}
 
  });
 
- function tick()
+ function price_tick()
  {
  		var marked = [];
  		var indicies = [];
@@ -113,9 +148,29 @@ function reset_server()
 
  			var index = indicies[i];
 
- 			console.log("indicies[i] = " + indicies[i]);
  			alter_price (index, change);
 
+ 		}
+ }
+
+ function sales_tick()
+ {
+ 		var players_cursor = Players.find();
+ 		var players = players_cursor.fetch();
+ 		for (var i = 0; i < players.length; i++) {
+ 			player = players[i];
+ 			var id = player.id;
+ 			var cash = player.cash;
+ 			var factories_cursor = Factories.find({"owner": id});
+ 			var factories = factories_cursor.fetch();
+ 			for (var j = 0; j < factories.length; j++) {
+ 				var factory = factories[j];
+ 				var good = Goods.findOne({"custom_id": factory.goods_id});
+ 				cash += factory.units * good.price;
+
+ 			}
+ 			pretty_number(cash);
+ 			Players.update({"id": id}, {$set: {"cash": cash}});
  		}
  }
 
@@ -128,6 +183,7 @@ function reset_server()
  	curr_price = pretty_number(curr_price);
  	if (curr_price <= 0) curr_price = 0.01;
  	Goods.update({"custom_id": id}, {$set: {"price": curr_price}});
+ 	Goods.update({"custom_id": id}, {$set: {"new_cost": curr_price * 150}});
  }
 
  function pretty_number (value)
