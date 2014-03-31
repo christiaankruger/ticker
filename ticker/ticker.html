@@ -55,7 +55,7 @@
                     <!-- Sidebar user panel -->
                     <div class="user-panel">
                         <div class="pull-left image">
-                            <img src="img/avatar3.png" class="img-circle" alt="User Image" />
+                            <img src="img/avatar5.png" class="img-circle" alt="User Image" />
                         </div>
                         <div class="pull-left info">
                             <p>{{user_name}}</p>
@@ -70,13 +70,7 @@
                             <a href="index.html">
                                 <i class="fa fa-dashboard"></i> <span>Dashboard</span>
                             </a>
-                        </li>
-                        <li>
-                            <a href="pages/widgets.html">
-                                <i class="fa fa-th"></i> <span>Factories</span> <small class="badge pull-right bg-green">new</small>
-                            </a>
-                        </li>
-                        
+                        </li>                        
                     </ul>
                 </section>
                 <!-- /.sidebar -->
@@ -84,6 +78,8 @@
 
              {{#if isActive}}
                 {{> game_screen}}
+            {{else}}
+                {{> not_active}}
             {{/if}}
 
 
@@ -91,7 +87,22 @@
         </div><!-- ./wrapper -->  
         </template>      
     
-
+    <template name="not_active">
+        <aside class="right-side">
+                <!-- Content Header (Page header) -->
+                <section class="content-header">
+                    <h1 id="main">
+                        Would you like to join us?
+                        <small id="small">A game is {{game_status}}</small>
+                    </h1>
+                    <a href="#" id="joinBtn" class="btn btn-success btn-large"><i class="icon-white icon-thumbs-up"></i> Yes</a>
+                    <ol class="breadcrumb">
+                        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                        <li class="active">Join</li>
+                    </ol>
+                </section>
+            </aside><!-- /.right-side -->
+    </template>
 
     <template name="game_screen">
 
@@ -208,7 +219,7 @@
                             <div class="small-box bg-red">
                                 <div class="inner">
                                     <h3>
-                                        $128.00
+                                        ${{e_p_s}}
                                     </h3>
                                     <p>
                                         Expenses per second
@@ -278,17 +289,26 @@
                                   <p>
                                     Value
                                   </p>
+                                  <h3>
+                                    ${{e_p_s}}
+                                  </h3>
+                                  <p>
+                                    Total expense per second
+                                  </p>
                                 </div>
                                 <div class="icon">
                                     <i class="fa fa-group"></i>
                                 </div>
                                 
                                     {{#if has_one}}
-                                    <a href="#" id="{{goods_id}}" class="small-box-footer"> Upgrade
-                                      <i class="upgrade fa fa-arrow-circle-right"></i>
+                                    <a href="#" id="{{goods_id}}" class="upgrade small-box-footer"> {{up_text}} for ${{up_cost}}
+                                    <div class="small"> This will manufacture {{up_units}} units per second. </div>
+                                      <i class="fa fa-arrow-circle-right"></i>
                                 </a>
+
                                     {{else}}
                                     <a href="#" id="{{goods_id}}" class="small-box-footer buy"> Buy for ${{new_cost}}
+                                        <div class="small"> You'll start with 3 units per second. </div>
                                       <i class="fa fa-arrow-circle-right"></i> </a>
                                     {{/if}}
 

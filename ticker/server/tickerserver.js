@@ -3,6 +3,7 @@
  systemStream = new Meteor.Stream('system');
  Goods = new Meteor.Collection("goods");
  Factories = new Meteor.Collection("factories");
+ Upgrades = new Meteor.Collection("upgrades");
 
  var goods = [
 	{"name" : "Toys", "price" : 5.00},
@@ -12,18 +13,38 @@
 	{"name" : "Silver", "price" : 5.00}
 ];
 
+var upgrades = [
+"Hire a monkey", "Hire another monkey", "Hire a manager",
+"Move to a new site", "Ignore child labaour laws"];
+
 var MAX_RANGE = 0.5;
 
-var starting_cash = 10000.00;
-var start_units = 5;
+var starting_cash = 20000.00;
+var start_units = 3;
+var in_play = false;
+var start_expense = 1.50;
 
  Meteor.startup(function () {
     if (!System.findOne()) {
       System.insert({"active": false});
     }
-    if (System.findOne().active) {
-    	set_ticks();
+    else if (System.findOne().active) {
+      in_play = true;
   	}
+    set_ticks();
+
+    if (Upgrades.findOne()) Upgrades._dropCollection();
+    for (var i = 0; i < upgrades.length; i++) {
+
+      var level = (i + 2);
+      var text = upgrades[i];
+
+      var cost = upgrade_cost (level);
+      var units = level * level;
+
+      Upgrades.insert({"text": text, "level" : level, "cost": cost, "units" : units});
+    }
+
   });
 
  Router.map(function () {
@@ -58,49 +79,60 @@ this.route('start-server', {
 
 });
 
+ function upgrade_cost (k)
+ {
+      return 500.0 * (1 + k/11) * Math.pow(k, 1.5) * (1/(11-k));
+ }
+
 function start_server() {
-	 System._dropCollection();
-	 Goods._dropCollection();
-      System.insert({"active": true});
-      for (var i = 0; i < goods.length; i++) {
-      	var g = goods[i];
-      	Goods.insert({"name": g.name, "price": g.price, "custom_id": i});
-      }
-      set_ticks();
-      
+
+  System._dropCollection();
+   in_play = true;
+   System.insert({"active": true});
 }
 
 function set_ticks()
 {
 	Meteor.setInterval(function()
       {
+         if (!System.findOne()) return;
+         if(System.findOne().active == false || !in_play) return;
       	 console.log("Tick");
       	 sales_tick();
       }, 1000);
 	Meteor.setInterval(function()
 	{
+    if (!System.findOne()) return;
+    if(System.findOne().active == false|| !in_play) return;
 		price_tick();
 	}, 3000);
 }
 
 function reset_server()
 {
+  in_play = false;
+  if (Goods.findOne()) Goods._dropCollection();
+  for (var i = 0; i < goods.length; i++) {
+        var g = goods[i];
+        Goods.insert({"name": g.name, "price": g.price, "custom_id": i});
+  }
 	System.update({"active" : true}, {"active": false});
-	Players._dropCollection();
-	Factories._dropCollection();
+	if (Players.findOne()) Players._dropCollection();
+	if (Factories.findOne()) Factories._dropCollection();
 }
 
  Meteor.methods({
 
  	add_player: function(userId, name) {
     if (Players.find({"id": userId}).count() != 0) return true;
- 		Players.insert({"id": userId, "name": name, "cash": starting_cash});
+ 		
+    Players.insert({"id": userId, "name": name, "cash": starting_cash});
 
  		var goods_cursor = Goods.find();
  		var goods = goods_cursor.fetch();
  		for (var i = 0; i < goods.length; i++) {
  			var good = goods[i];
- 			Factories.insert({"goods_id": good.custom_id, "owner": userId, "units": 0, "value": 0.00});
+ 			Factories.insert({"level": 1, "goods_id": good.custom_id, "owner": userId, "units": 0, "value": 0.00, "expense": start_expense});
  		}
 
  		console.log("Added " + name + " to the game.");
@@ -127,7 +159,31 @@ function reset_server()
 
  		return true;
 
- 	}
+ 	},
+
+  upgrade_factory: function (userId, goodId)
+  {
+      console.log("userId = " + userId);
+      console.log("goodId = " + goodId);
+
+      var factory = find_factory(userId, goodId);
+      var new_level = factory.level + 1;
+      var upgrade = Upgrades.findOne({"level": new_level});
+      var good = find_good(goodId);
+      var cash = Players.findOne({"id": userId}).cash;
+
+      var upgrade_cost = upgrade.cost * good.price;
+
+      if (cash < upgrade_cost) return false;
+
+      Players.update({"id": userId}, {$inc: {"cash": -1*upgrade_cost}});
+
+      var units = upgrade.units;
+      var value = factory.value + upgrade_cost;
+      var expenses_per_second = factory.expenses_per_second + 0.25;
+
+      Factories.update({"_id" : factory._id}, {$set: {"level": new_level, "units": units, "value": value, "expenses_per_second": expenses_per_second}});
+  }
 
  });
 
@@ -158,9 +214,31 @@ function reset_server()
  		}
  }
 
+ function find_factory(userId, goodId)
+ {
+    var factories_curr = Factories.find({"owner": userId});
+    var factories = factories_curr.fetch();
+    for (var i = 0; i < factories.length; i++) {
+      var factory = factories[i];
+      if (factory.goods_id == goodId) return factory;
+    }
+    return null;
+ }
+
+ function find_good (goodId)
+ {
+    var goods_cursor = Goods.find();
+    var goods = goods_cursor.fetch();
+    for (var i = 0; i < goods.length; i++) {
+      if (goods[i].custom_id == goodId) return goods[i];
+    }
+    return null;
+ }
+
  function sales_tick()
  {
  		var sales_per_second = 0.0;
+    var expenses_per_second = 0.0;
  		var players_cursor = Players.find();
  		var players = players_cursor.fetch();
  		for (var i = 0; i < players.length; i++) {
@@ -172,12 +250,13 @@ function reset_server()
  			for (var j = 0; j < factories.length; j++) {
  				var factory = factories[j];
  				var good = Goods.findOne({"custom_id": factory.goods_id});
- 				cash += factory.units * good.price;
- 				sales_per_second += factory.units * good.price;
+ 				cash += factory.units * (good.price - factory.expense);
 
+ 				sales_per_second += factory.units * good.price;
+        expenses_per_second += factory.units * factory.expense;
  			}
  			pretty_number(cash);
- 			Players.update({"id": id}, {$set: {"cash": cash, "sales_per_second" : sales_per_second}});
+ 			Players.update({"id": id}, {$set: {"cash": cash, "sales_per_second" : sales_per_second, "expenses_per_second": expenses_per_second}});
  		}
  }
 

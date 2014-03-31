@@ -3,6 +3,7 @@ systemStream = new Meteor.Stream('system');
 System = new Meteor.Collection("system");
 Goods = new Meteor.Collection("goods");
 Factories = new Meteor.Collection("factories");
+Upgrades = new Meteor.Collection("upgrades");
 
 var colors = ["blue", "black", "orange", "red", "green"];
 
@@ -14,6 +15,13 @@ Template.main.isActive = function ()
 		alert("A game is running, but log in to join.");
 	}
 	return active && Meteor.userId();
+}
+
+Template.not_active.game_status = function ()
+{
+	if (!System.findOne()) return "starting soon.";
+	if (!System.findOne().active) return "starting soon.";
+	return "in play.";
 }
 
 Template.main.user_name = function()
@@ -33,6 +41,12 @@ Template.dashboard.s_p_s = function()
 {
 	var sps = Players.findOne({"id": Meteor.userId()}).sales_per_second;
 	return numeral(sps).format('0,0.00');
+}
+
+Template.dashboard.e_p_s = function()
+{
+	var eps = Players.findOne({"id": Meteor.userId()}).expenses_per_second;
+	return numeral(eps).format('0,0.00');
 }
 
 Template.dashboard.cash = function()
@@ -84,13 +98,35 @@ Template.facts.factories = function()
 		var goods_id = facts[i].goods_id;
 		var color = colors[parseInt(goods_id) % colors.length];
 		var good_name = Goods.findOne({"custom_id" : goods_id}).name;
+		var good_cost = Goods.findOne({"custom_id": goods_id}).price;
 
 		var new_cost = Goods.findOne({"custom_id" : goods_id}).new_cost;
+		new_cost = numeral(new_cost).format('0,0.00');
 
 		var units = facts[i].units;
 		var value = numeral(facts[i].value).format('0,0.00');
 		var has_one = units != 0;
-		to_return.push({"color": color, "goods_id": goods_id, "goods": good_name, "units": units, "value": value, "has_one": has_one, "new_cost" : new_cost});
+
+		var single_e_p_s = facts[i].expense;
+		var e_p_s = single_e_p_s * units;
+		e_p_s = numeral(e_p_s).format('0,0.00');
+
+		var level = facts[i].level;
+		var upgrade = Upgrades.findOne({"level": level+1});
+
+		var up_cost, up_text, up_units;
+
+		if (upgrade != null) {
+
+			up_cost = numeral(upgrade.cost * good_cost).format('0,0.00');
+			up_text = upgrade.text;
+			up_units = upgrade.units;
+		} else {
+			up_cost = numeral(upgrade.cost * good_cost).format('0,0.00');
+			up_text = "Make this bigger!";
+			up_units = (level + 1) * (level + 1);
+		}
+		to_return.push({"up_units": up_units, "up_cost": up_cost, "up_text": up_text, "e_p_s": e_p_s, "color": color, "goods_id": goods_id, "goods": good_name, "units": units, "value": value, "has_one": has_one, "new_cost" : new_cost});
 	}
 	return to_return;
 }	
@@ -100,19 +136,20 @@ Meteor.startup(function () {
     $('body').attr('skin-black');
   });
 
-/* Template.not_active.events({
+ Template.not_active.events({
 
-	'click input#join' : function (event) {
+	'click #joinBtn' : function (event) {
 		event.preventDefault();
 		if (Meteor.userId()) {
 			Meteor.call("add_player", Meteor.userId(), Meteor.user().profile.name,
 				function(err, success) {
 					if (success) {
-						$("#notice").html("<h4>You are signed up. Waiting for server.</h4>");
+						$("#main").html("Waiting for the game to start.");
+						$("#small").html("Hang tight.");
 					}
 				});
 		} else {
-			/* Not logged in 
+			/* Not logged in */
 			alert ("You are not logged in. Please log in and try again.");
 			return;
 		}
@@ -120,7 +157,7 @@ Meteor.startup(function () {
 
 
 
-}); */
+});
 
 
 Template.factory.events({
@@ -131,5 +168,14 @@ Template.factory.events({
 
 		});
 		
+	},
+
+	'click .upgrade': function (event)
+	{
+		event.preventDefault();
+		var good = event.currentTarget.id;
+		Meteor.call("upgrade_factory", Meteor.userId(), good, function (err, success) {
+
+		});
 	}
 });
