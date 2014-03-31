@@ -110,7 +110,6 @@ function set_ticks()
          if(System.findOne().active == false || !in_play) return;
       	 console.log("Tick");
       	 sales_tick();
-         goods_document_tick();
       }, 1000);
 	Meteor.setInterval(function()
 	{
@@ -122,16 +121,6 @@ function set_ticks()
 
 }
 
-function goods_document_tick()
-{ 
-    var goods_cursor = Goods.find();
-    var goods = goods_cursor.fetch();
-    for (var i = 0; i < goods.length; i++) {
-      var good = goods[i];
-      var price = good.price;
-      Goods.update({"_id": good._id}, {$push: {history: price}});
-    }
-}
 
 function reset_server()
 {

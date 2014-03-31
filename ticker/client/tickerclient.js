@@ -9,6 +9,7 @@ var colors = ["blue", "black", "orange", "red", "green"];
 var charts = [];
 var lines = [];
 var isActive = false;
+var charts_active = false;
 
 Template.main.isActive = function ()
 {
@@ -20,7 +21,13 @@ Template.main.isActive = function ()
 
 	var game_on = active && Meteor.userId();
 
-	isActive = game_on;
+	if (!charts_active) {
+		Meteor.setInterval(function()
+		{
+			update_charts();
+		}, 1000);
+		charts_active = true;
+	}
 
 	return game_on;
 }
@@ -144,11 +151,9 @@ Template.facts.factories = function()
 
 
 Meteor.startup(function () {
-    
-	Meteor.setInterval(function()
-	{
-		if (isActive) update_charts();
-	}, 1000);
+
+
+
   });
 
 function update_charts()
@@ -158,7 +163,7 @@ function update_charts()
 	for (var i = 0; i < goods.length; i++) {
 		
 		if (charts.length < goods.length) {
-			charts.push(new SmoothieChart({minValue:0, millisPerPixel:92}));
+			charts.push(new SmoothieChart({maxValueScale:1.2, minValue:0, millisPerPixel:92}));
 			charts[i].streamTo(document.getElementById("chart-" + goods[i].custom_id), 1000);
 			lines[i] = new TimeSeries();
 			charts[i].addTimeSeries(lines[i], {lineWidth:2,strokeStyle:'#00ff00'});
