@@ -165,9 +165,7 @@ function reset_server()
 
  		Factories.update({"owner": userId, "goods_id": good}, {$set: {"units": start_units, "value" : cost}});
 
- 		money -= cost;
-
- 		Players.update({"id": userId}, {$set: {"cash": money}});
+ 		Players.update({"id": userId}, {$inc: {"cash": -1*cost}});
 
  		return true;
 
@@ -253,13 +251,16 @@ function reset_server()
 
  function sales_tick()
  {
- 		var sales_per_second = 0.0;
-    var expenses_per_second = 0.0;
+
  		var players_cursor = Players.find();
  		var players = players_cursor.fetch();
  		for (var i = 0; i < players.length; i++) {
- 			player = players[i];
+ 			
+      player = players[i];
  			var id = player.id;
+      var sales_per_second = 0.0;
+      var expenses_per_second = 0.0;
+
  			var cash = player.cash;
  			var factories_cursor = Factories.find({"owner": id});
  			var factories = factories_cursor.fetch();
@@ -271,7 +272,6 @@ function reset_server()
  				sales_per_second += factory.units * good.price;
         expenses_per_second += factory.units * factory.expense;
  			}
- 			pretty_number(cash);
  			Players.update({"id": id}, {$set: {"cash": cash, "sales_per_second" : sales_per_second, "expenses_per_second": expenses_per_second}});
  		}
  }
