@@ -14,7 +14,7 @@
 ];
 
 var upgrades = [
-"Hire a monkey", "Hire another monkey", "Cut lunch hour", "Hire a manager",
+"Hire a monkey", "Hire another monkey", "Hire a manager", "Upgrade computer system",
 "Move to a new site", "Buy a few trucks", "Ignore child labour laws"];
 
 var MAX_RANGE = 0.5;
@@ -23,6 +23,7 @@ var starting_cash = 20000.00;
 var start_units = 3;
 var in_play = false;
 var start_expense = 1.50;
+var buy_price_factor = 2000;
 
  Meteor.startup(function () {
     if (!System.findOne()) {
@@ -123,7 +124,8 @@ function reset_server()
   if (Goods.findOne()) Goods._dropCollection();
   for (var i = 0; i < goods.length; i++) {
         var g = goods[i];
-        Goods.insert({"name": g.name, "price": g.price, "custom_id": i});
+        var new_cost = g.price * buy_price_factor;
+        Goods.insert({"new_cost": new_cost, "name": g.name, "price": g.price, "custom_id": i});
   }
 	System.update({"active" : true}, {"active": false});
 	if (Players.findOne()) Players._dropCollection();
@@ -141,6 +143,7 @@ function reset_server()
  		var goods = goods_cursor.fetch();
  		for (var i = 0; i < goods.length; i++) {
  			var good = goods[i];
+      var new_cost = good.price * buy_price_factor;
  			Factories.insert({"level": 1, "goods_id": good.custom_id, "owner": userId, "units": 0, "value": 0.00, "expense": start_expense});
  		}
 
@@ -190,6 +193,10 @@ function reset_server()
       var units = upgrade.units;
       var value = factory.value + upgrade_cost;
       var expenses_per_second = factory.expenses_per_second;
+
+      if (new_level % 4 == 0) {
+          expenses_per_second += 0.5;
+      }
 
       Factories.update({"_id" : factory._id}, {$set: {"level": new_level, "units": units, "value": value, "expenses_per_second": expenses_per_second}});
   }
@@ -278,7 +285,7 @@ function reset_server()
  	curr_price = pretty_number(curr_price);
  	if (curr_price <= 0) curr_price = 0.01;
  	Goods.update({"custom_id": id}, {$set: {"price": curr_price}});
- 	Goods.update({"custom_id": id}, {$set: {"new_cost": curr_price * 2000}});
+ 	Goods.update({"custom_id": id}, {$set: {"new_cost": curr_price * buy_price_factor}});
  }
 
  function pretty_number (value)
