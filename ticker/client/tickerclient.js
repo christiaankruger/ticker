@@ -6,6 +6,9 @@ Factories = new Meteor.Collection("factories");
 Upgrades = new Meteor.Collection("upgrades");
 
 var colors = ["blue", "black", "orange", "red", "green"];
+var charts = [];
+var lines = [];
+var isActive = false;
 
 Template.main.isActive = function ()
 {
@@ -14,7 +17,12 @@ Template.main.isActive = function ()
 	if (!Meteor.userId()) {
 		alert("A game is running, but log in to join.");
 	}
-	return active && Meteor.userId();
+
+	var game_on = active && Meteor.userId();
+
+	isActive = game_on;
+
+	return game_on;
 }
 
 Template.not_active.game_status = function ()
@@ -76,16 +84,19 @@ Template.game_screen.players = function()
 Template.dashboard.goods = function()
 {
 	var to_return = [];
-
 	var goods_cursor = Goods.find();
 	var goods = goods_cursor.fetch();
 	for (var i = 0; i < goods.length; i++)
 	{
 		var good = goods[i];
 		var name = good.name;
+		var id = good.custom_id.toString();
+
 		var price = numeral(good.price).format('0,0.00');
-		to_return.push({"name": name, "price": price});
+
+		to_return.push({"id": id, "name": name, "price": price});
 	}
+
 	return to_return;
 }
 
@@ -133,8 +144,28 @@ Template.facts.factories = function()
 
 
 Meteor.startup(function () {
-    $('body').attr('skin-black');
+    
+	Meteor.setInterval(function()
+	{
+		if (isActive) update_charts();
+	}, 1000);
   });
+
+function update_charts()
+{
+	var goods_cursor = Goods.find();
+	var goods = goods_cursor.fetch();
+	for (var i = 0; i < goods.length; i++) {
+		
+		if (charts.length < goods.length) {
+			charts.push(new SmoothieChart({minValue:0, millisPerPixel:92}));
+			charts[i].streamTo(document.getElementById("chart-" + goods[i].custom_id), 1000);
+			lines[i] = new TimeSeries();
+			charts[i].addTimeSeries(lines[i], {lineWidth:2,strokeStyle:'#00ff00'});
+		}
+		lines[i].append(new Date().getTime(), goods[i].price);
+	}
+}
 
  Template.not_active.events({
 

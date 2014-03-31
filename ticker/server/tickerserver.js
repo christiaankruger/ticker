@@ -89,6 +89,7 @@ this.route('start-server', {
 
 });
 
+ /* For p = 1 */
  function upgrade_cost (k)
  {
       return 500.0 * (1 + k/(15-k)) * Math.pow(k, 1.5) * (1/(15-k));
@@ -109,6 +110,7 @@ function set_ticks()
          if(System.findOne().active == false || !in_play) return;
       	 console.log("Tick");
       	 sales_tick();
+         goods_document_tick();
       }, 1000);
 	Meteor.setInterval(function()
 	{
@@ -116,6 +118,19 @@ function set_ticks()
     if(System.findOne().active == false|| !in_play) return;
 		price_tick();
 	}, 3000);
+
+
+}
+
+function goods_document_tick()
+{ 
+    var goods_cursor = Goods.find();
+    var goods = goods_cursor.fetch();
+    for (var i = 0; i < goods.length; i++) {
+      var good = goods[i];
+      var price = good.price;
+      Goods.update({"_id": good._id}, {$push: {history: price}});
+    }
 }
 
 function reset_server()
