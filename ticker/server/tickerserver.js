@@ -14,8 +14,8 @@
 ];
 
 var upgrades = [
-"Hire a monkey", "Hire another monkey", "Hire a manager",
-"Move to a new site", "Ignore child labaour laws"];
+"Hire a monkey", "Hire another monkey", "Cut lunch hour", "Hire a manager",
+"Move to a new site", "Buy a few trucks", "Ignore child labour laws"];
 
 var MAX_RANGE = 0.5;
 
@@ -42,6 +42,15 @@ var start_expense = 1.50;
       var cost = upgrade_cost (level);
       var units = level * level;
 
+      Upgrades.insert({"text": text, "level" : level, "cost": cost, "units" : units});
+    }
+
+    var text = "Increase storage even more";
+
+    for (var i = upgrades.length; i <= 100; i++) {
+      var level = (i + 2);
+      var cost = upgrade_cost(level);
+      var units = level * level;
       Upgrades.insert({"text": text, "level" : level, "cost": cost, "units" : units});
     }
 
@@ -81,7 +90,7 @@ this.route('start-server', {
 
  function upgrade_cost (k)
  {
-      return 500.0 * (1 + k/11) * Math.pow(k, 1.5) * (1/(11-k));
+      return 500.0 * (1 + k/(15-k)) * Math.pow(k, 1.5) * (1/(15-k));
  }
 
 function start_server() {
@@ -180,7 +189,7 @@ function reset_server()
 
       var units = upgrade.units;
       var value = factory.value + upgrade_cost;
-      var expenses_per_second = factory.expenses_per_second + 0.25;
+      var expenses_per_second = factory.expenses_per_second;
 
       Factories.update({"_id" : factory._id}, {$set: {"level": new_level, "units": units, "value": value, "expenses_per_second": expenses_per_second}});
   }

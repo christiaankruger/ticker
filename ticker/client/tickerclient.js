@@ -126,7 +126,7 @@ Template.facts.factories = function()
 			up_text = "Make this bigger!";
 			up_units = (level + 1) * (level + 1);
 		}
-		to_return.push({"up_units": up_units, "up_cost": up_cost, "up_text": up_text, "e_p_s": e_p_s, "color": color, "goods_id": goods_id, "goods": good_name, "units": units, "value": value, "has_one": has_one, "new_cost" : new_cost});
+		to_return.push({"level": level, "up_units": up_units, "up_cost": up_cost, "up_text": up_text, "e_p_s": e_p_s, "color": color, "goods_id": goods_id, "goods": good_name, "units": units, "value": value, "has_one": has_one, "new_cost" : new_cost});
 	}
 	return to_return;
 }	

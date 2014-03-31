@@ -270,19 +270,14 @@
 <template name="factory">
   <div class="small-box bg-{{color}}">
                                 <div class="inner">
-                                    <h3>
-                                        {{goods}}
-                                    </h3>
-                                    <p>
-                                        Good type
-                                    </p>
-                                
-                                  <h3>
-                                    {{units}}
-                                  </h3>
-                                  <p>
-                                    Units per second
-                                  </p>
+                                <h3 id="main">
+                                {{goods}}
+                                <small id="small">Level {{level}}</small>
+                                </h3>
+                                  <h3 id="main">
+                                {{units}}
+                                <small id="small">Units per second</small>
+                                </h3>
                                   <h3>
                                     ${{value}}
                                   </h3>
